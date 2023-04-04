@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "apis1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ApiManagement/service/WebApiManService/apis/WebApi",
+      "type": "apis.azure"
+    },
+    "mssql1": {
+      "secretStore": null,
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/pb-dotnetdbserver/databases/PB_DOTNET",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:PBConnection",
+      "dynamicId": null
+    },
+    "storage1": {
+      "secretStore": null,
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/hortagramstorage",
+      "type": "storage.azure",
+      "connectionId": "ConnectionStrings:Storage",
+      "dynamicId": null
+    }
+  }
+}

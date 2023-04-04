@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "apis1": {
+      "type": "apis"
+    },
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:PBConnection",
+      "dynamicId": null
+    },
+    "storage1": {
+      "type": "storage",
+      "connectionId": "ConnectionStrings:Storage",
+      "dynamicId": null
+    }
+  }
+}
