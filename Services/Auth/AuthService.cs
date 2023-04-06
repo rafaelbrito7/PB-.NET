@@ -34,7 +34,7 @@ namespace Services.Auth
         {
             List<Claim> claims = new List<Claim>()
             {
-                new Claim(JwtRegisteredClaimNames.UniqueName, Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, email),
             };
 
