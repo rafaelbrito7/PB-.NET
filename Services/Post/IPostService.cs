@@ -12,13 +12,13 @@ namespace Services
     {
         IPostRepository PostRepository { get; set; }
 
-        Task<List<PostResponse>> BuildFeed(Guid userId);
-
         Task<Post> CreatePost(Guid Id, Guid UserId, string photoUrl, string description);
 
         Task<Post> GetById(Guid id);
 
-        Task<List<PostResponse>> GetAllPostsOfAUser(Guid userId);
+        Task<List<Post>> GetAllPostsOfAUser(Guid userId);
+
+        Task<List<Post>> GetFeed(User user);
 
         Task<bool> UpdatePost(Post post);
 

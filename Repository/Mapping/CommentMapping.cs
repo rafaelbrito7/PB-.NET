@@ -14,17 +14,19 @@ namespace Repository.Mapping
     {
         public void Configure(EntityTypeBuilder<Comment> builder)
         {
-            builder
-                .HasOne<User>(entity => entity.User)
-                .WithMany(entity => entity.Comments)
-                .HasForeignKey(entity => entity.UserId)
-                .OnDelete(DeleteBehavior.NoAction);
+            builder.HasKey(x => x.Id);
 
-            builder
-                .HasOne<Post>(entity => entity.Post)
-                .WithMany(entity => entity.Comments)
-                .HasForeignKey(entity => entity.PostId)
+            builder.Property(x => x.Content).IsRequired();
+
+            builder.HasOne(x => x.Post)
+                .WithMany(x => x.Comments)
+                .HasForeignKey(x => x.PostId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(x => x.User)
+                .WithMany(x => x.Comments)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

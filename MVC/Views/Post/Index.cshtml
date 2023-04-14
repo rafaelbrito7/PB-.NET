@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Entities.Post>
+
+    @{
+        ViewData["Title"] = "View";
+    }
+
+<h1>Posts</h1>
+
+@if(ViewBag.Id == ViewBag.CurrentUserId)
+{
+    <form asp-action="Create">
+        <input type="hidden" name="id" value="@Model" />
+        <input type="submit" value="Fazer postagem" class="btn btn-primary" />
+    </form>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Conteúdo do post
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.ActionLink("Detalhes da postagem", "Details", new {  id=item.Id  })
+                </td>
+            </tr>
+            }
+    </tbody>
+</table>

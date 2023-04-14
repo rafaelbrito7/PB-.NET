@@ -1,0 +1,65 @@
+﻿@model Entities.User
+
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<h1>@Model.FirstName @Model.Lastname</h1>
+<div>
+    <hr />
+    <img class="avatar" src="@Model.PhotoUrl" alt="User Image" height="200"/>
+    <dl class="row">
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class="col-sm-2">
+            @Model.Followers.Count()
+        </dt>
+        <dd class="col-sm-10">
+            @Html.ActionLink("Seguidores", "Followers", "User", new { id = Model.Id })
+        </dd>
+        <dt class="col-sm-2">
+            @Model.Following.Count()
+        </dt>
+        <dd class="col-sm-10">
+            @Html.ActionLink("Seguindo", "Following", "User", new { id = Model.Id })
+        </dd>
+    </dl>
+    @{
+        if (Model.Email == this.User.Identity?.Name)
+        {
+            @Html.ActionLink("Editar perfil", "Edit");
+            <br/>
+            @Html.ActionLink("Deletar perfil", "Delete")
+            ;
+        }
+
+        if (Model.Email != this.User.Identity?.Name)
+        {
+            if (!Model.Followers.Any(follower => follower.UserFollower.Email == this.User.Identity?.Name))
+            {
+                <form asp-action="AddFollower">
+                    <input type="hidden" name="userFollowed" value="@Model.Id" />
+                    <input type="submit" value="Seguir" class="btn btn-primary"> 
+                </form>
+            }
+            else
+            {
+                <form asp-action="RemoveFollower">
+                    <input type="hidden" name="userFollowed" value="@Model.Id" />
+                    <input type="submit" value="Deixar de seguir" class="btn btn-danger" /> 
+                </form>
+            }
+        } 
+
+        <br />
+        @Html.ActionLink("Posts", "Index", "Post", new { id = Model.Id });
+        <br />
+        
+        
+    }
+</div>

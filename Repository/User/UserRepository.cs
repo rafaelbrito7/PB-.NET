@@ -31,7 +31,26 @@ namespace Repository
             }
         }
 
-        public async Task UpdateUser(Entities.User user)
+        public async Task RemoveUser(User user)
+        {
+            try
+            {
+                var userDb = Context.Users.Single(u => u.Id == user.Id);
+                var followers = Context.UsersFollowers.Where(u => u.UserFollowerId == user.Id || u.UserFollowedId == user.Id).ToList();
+                var comments = Context.Comments.Where(c => c.UserId == user.Id).ToList();
+
+                Context.Users.Remove(user);
+
+                await Context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public async Task UpdateUser(User user)
         {
             try
             {
@@ -45,47 +64,68 @@ namespace Repository
             }
         }
 
-        public async Task<List<Entities.User>> GetUsersByNameOrLastname(string name, string lastname)
-        {
-            return await Context.Users.Where(user => user.FirstName.Contains(name) || user.Lastname.Contains(lastname)).ToListAsync();
-        }
-
-        public async Task<Entities.User> GetByEmail(string email)
+        public async Task<User> GetByEmail(string email)
         {
             return await Context.Users.FirstOrDefaultAsync(user => user.Email == email);
         }
 
-        public async Task<Entities.User> GetById(Guid id)
+        public async Task<User> GetById(Guid id)
         {
-            return await Context.Users.FirstOrDefaultAsync(user => user.Id == id);
+            User user = await Context.Users
+            .Include(user => user.Followers)
+                .ThenInclude(user => user.UserFollower)
+                
+            .Include(user => user.Following)
+                .ThenInclude(user => user.UserFollowed)
+
+            .Include(user => user.Posts)
+            .FirstOrDefaultAsync(user => user.Id == id);
+
+            return user;
         }
 
-        public async Task<List<Entities.User>> GetAll()
+        public async Task<UsersFollowers> GetUsersFollowersById(Guid id)
+        {
+            UsersFollowers usersFollowers = await Context.UsersFollowers.FirstOrDefaultAsync(uf => uf.Id == id);
+            return usersFollowers;
+        }
+
+        public async Task<List<User>> GetAll()
         {
             return await Context.Users.ToListAsync();
         }
 
-        public async Task<List<UserFollowersResponse>> GetFollowers(Entities.User user)
+        public async Task<List<User>> GetFollowers(User user)
         {
-            user.Followers = await Context.UsersFollowers.Where(uf => uf.UserId == user.Id).ToListAsync();
+            user.Followers = await Context.UsersFollowers.Where(uf => uf.UserFollowedId == user.Id).ToListAsync();
 
-            List<UserFollowersResponse> followers = new List<UserFollowersResponse>();
+            List<User> followers = new List<User>();
 
             foreach (UsersFollowers u in user.Followers)
             {
-                Entities.User userFound = await Context.Users.FirstOrDefaultAsync(user => user.Id == u.FollowerId);
-                followers.Add(new UserFollowersResponse
+                Entities.User userFound = await Context.Users.FirstOrDefaultAsync(user => user.Id == u.UserFollowerId);
+                followers.Add(new User
                 {
                     Id = userFound.Id,
                     FirstName = userFound.FirstName,
                     Lastname = userFound.Lastname,
                     Email = userFound.Email,
-                    Status = userFound.Status,
-                    PhotoURL = userFound.PhotoURL
+                    PhotoUrl = userFound.PhotoUrl
                 });
             }
 
             return followers;
+        }
+
+        public async Task<List<User>> GetNotFollowing(User user)
+        {
+            var followedUserIds = user.Following.Select(f => f.UserFollowedId);
+
+            var notFollowedUsers = await Context.Users
+                .Where(u => u.Id != user.Id && !followedUserIds.Contains(u.Id))
+                .ToListAsync();
+
+            return notFollowedUsers;
         }
 
         public async Task AddFollower(UsersFollowers userFollower)

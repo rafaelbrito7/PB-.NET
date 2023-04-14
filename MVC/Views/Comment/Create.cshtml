@@ -1,0 +1,36 @@
+﻿@model Entities.Comment
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Faça seu comentário!</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                 <label asp-for="PostId" class="control-label">Id do Post</label>
+                <input asp-for="PostId" class="form-control" value="@ViewBag.Id" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Content" class="control-label">Comentário</label>
+                <input asp-for="Content" class="form-control" />
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+            <div>
+                <a asp-action="Details" asp-controller="Post" asp-route-id="@ViewBag.Id">Retornar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

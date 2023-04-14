@@ -14,7 +14,36 @@ namespace Repository.Mapping
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.HasIndex(model => model.Email).IsUnique();
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.FirstName).IsRequired();
+            builder.Property(x => x.Lastname).IsRequired();
+            builder.Property(x => x.Email).IsRequired();
+            builder.Property(x => x.Password).IsRequired();
+
+            builder
+                .HasMany(u => u.Followers)
+                .WithOne(uf => uf.UserFollowed)
+                .HasForeignKey(uf => uf.UserFollowedId)
+                .OnDelete(DeleteBehavior.ClientCascade);
+
+            builder
+                .HasMany(u => u.Following)
+                .WithOne(uf => uf.UserFollower)
+                .HasForeignKey(uf => uf.UserFollowerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder
+                .HasMany(u => u.Posts)
+                .WithOne(p => p.User)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder
+                .HasMany(u => u.Comments)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

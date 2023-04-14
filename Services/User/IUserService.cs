@@ -12,28 +12,24 @@ namespace Services
     {
         IUserRepository UserRepository { get; set; }
 
-        Task<UserResponse> CreateUser(Guid Id, string firstName, string lastName, string email, string password, string photoUrl, bool status);
-
-        Task<List<UserResponse>> GetUsersByNameOrLastname(string name, string lastname);
+        Task<User> CreateUser(Guid Id, User user);
 
         Task<User> GetUserByEmail(string email);
 
-        Task<UserResponse> GetByEmail(string email);
+        Task<User> GetByEmail(string email);
 
-        Task<User> GetUserById(Guid id);
+        Task<User> GetById(Guid id);
 
-        Task<UserResponse> GetById(Guid id);
+        Task<List<User>> GetAll();
 
-        Task<List<UserResponse>> GetAll();
-
-        Task<bool> UpdateUser(Guid id, string firstName, string lastName, string email, string password, string photoUrl);
+        Task<bool> UpdateUser(Guid id, string firstName, string lastname, string email, string password, string photoURL);
 
         Task<bool> RemoveUser(User user);
 
-        Task<List<UserFollowersResponse>> GetFollowers(Guid userId);
+        Task<List<User>> GetNotFollowing(Guid userId);
 
-        Task<bool> AddFollower(Guid userId, Guid followerId);
+        Task<bool> AddFollower(Guid userId, Guid userFollowedId);
 
-        Task<bool> RemoveFollower(Guid userId, Guid followerId);
+        Task<bool> RemoveFollower(Guid userId, Guid userFollowedId);
     }
 }

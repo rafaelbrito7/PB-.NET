@@ -1,0 +1,26 @@
+﻿@model Entities.Comment
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Deletar postagem</h1>
+
+<h3>Tem certeza que deseja deletar esse comentário?</h3>
+<div>
+    <h4>Country</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Content)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Content)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="submit" value="Tem certeza que deseja deletar?" class="btn btn-danger" /> |
+        <a asp-action="Index">Voltar para lista de postagens</a>
+    </form>
+</div>

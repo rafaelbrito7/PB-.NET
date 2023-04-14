@@ -18,43 +18,28 @@ namespace Services
             UserRepository = userRepository;
         }
 
-        public async Task<UserResponse> CreateUser(Guid Id, string FirstName, string Lastname, string email, string password, string photoUrl, bool status)
+        public async Task<User> CreateUser(Guid Id, User user)
         {
-            User user = new User
+            User newUser = new User
             {
                 Id = Id,
-                FirstName = FirstName,
-                Lastname = Lastname,
-                Email = email,
-                Password = password,
-                PhotoURL = photoUrl,
-                Status = status
+                FirstName = user.FirstName,
+                Lastname = user.Lastname,
+                Email = user.Email,
+                Password = user.Password,
+                PhotoUrl = user.PhotoUrl,
             };
 
-            await UserRepository.CreateUser(user);
-            UserResponse userResponse = Utils.ConvertUserToUserResponse(user);
-            return userResponse;
-        }
+            var checkIfUserExists = await UserRepository.GetByEmail(user.Email);
 
-        public async Task<List<UserResponse>> GetUsersByNameOrLastname(string name, string lastname)
-        {
-            List<User> users = await UserRepository.GetUsersByNameOrLastname(name, lastname);
-            List<UserResponse> usersResponse = new List<UserResponse>();
-
-            foreach (User u in users)
+            if(checkIfUserExists != null)
             {
-                usersResponse.Add(new UserResponse
-                {
-                    Id = u.Id,
-                    FirstName = u.FirstName,
-                    Lastname = u.Lastname,
-                    Email = u.Email,
-                    Status = u.Status,
-                    PhotoURL = u.PhotoURL
-                });
+                return null;
             }
 
-            return usersResponse;
+            await UserRepository.CreateUser(newUser);
+            User userResponse = newUser;
+            return userResponse;
         }
 
         public async Task<User> GetUserByEmail(string email)
@@ -63,41 +48,32 @@ namespace Services
             return user;
         }
 
-        public async Task<UserResponse> GetByEmail(string email)
+        public async Task<User> GetByEmail(string email)
         {
             User user = await UserRepository.GetByEmail(email);
-            UserResponse userResponse = Utils.ConvertUserToUserResponse(user);
-            return userResponse;
+            return user;
         }
 
-        public async Task<User> GetUserById(Guid id)
+        public async Task<User> GetById(Guid id)
         {
             User user = await UserRepository.GetById(id);
             return user;
         }
 
-        public async Task<UserResponse> GetById(Guid id)
-        {
-            User user = await UserRepository.GetById(id);
-            UserResponse userResponse = Utils.ConvertUserToUserResponse(user);
-            return userResponse;
-        }
-
-        public async Task<List<UserResponse>> GetAll()
+        public async Task<List<User>> GetAll()
         {
             List<User> users = await UserRepository.GetAll();
-            List<UserResponse> usersResponse = new List<UserResponse>();
+            List<User> usersResponse = new List<User>();
 
             foreach (User u in users)
             {
-                usersResponse.Add(new UserResponse
+                usersResponse.Add(new User
                 {
                     Id = u.Id,
                     FirstName = u.FirstName,
                     Lastname = u.Lastname,
                     Email = u.Email,
-                    Status = u.Status,
-                    PhotoURL = u.PhotoURL
+                    PhotoUrl = u.PhotoUrl
                 });
             }
 
@@ -108,6 +84,13 @@ namespace Services
         {
             try
             {
+                User checkEmailsAvailability = await UserRepository.GetByEmail(email);
+
+                if (checkEmailsAvailability != null && checkEmailsAvailability.Id != id)
+                {
+                    return false;
+                }
+
                 User user = await UserRepository.GetById(id);
 
                 if (user == null)
@@ -131,7 +114,7 @@ namespace Services
                 }
                 if (!string.IsNullOrEmpty(photoUrl))
                 {
-                    user.PhotoURL = photoUrl;
+                    user.PhotoUrl = photoUrl;
                 }
 
                 await UserRepository.UpdateUser(user);
@@ -147,9 +130,8 @@ namespace Services
         {
             try
             {
-                user.Status = false;
+                await UserRepository.RemoveUser(user);
 
-                await UserRepository.UpdateUser(user);
                 return true;
             }
             catch (Exception e)
@@ -159,16 +141,16 @@ namespace Services
             }
         }
 
-        public async Task<List<Entities.UserFollowersResponse>> GetFollowers(Guid userId)
+        public async Task<List<User>> GetNotFollowing(Guid userId)
         {
             try
             {
-                User user = Utils.ConvertUserResponseToUser(await GetById(userId));
+                User user = await GetById(userId);
 
                 if (user == null)
                     return null;
 
-                List<UserFollowersResponse> followers = await UserRepository.GetFollowers(user);
+                List<User> followers = await UserRepository.GetNotFollowing(user);
                 return followers;
             }
             catch (Exception e)
@@ -178,31 +160,43 @@ namespace Services
             }
         }
 
-        public async Task<bool> AddFollower(Guid userId, Guid followerId)
+        public async Task<bool> AddFollower(Guid userId, Guid userFollowedId)
         {
-            if (userId == followerId)
+            if (userId == userFollowedId)
                 return false;
 
             User user = await UserRepository.GetById(userId);
-            User follower = await UserRepository.GetById(followerId);
+            User follower = await UserRepository.GetById(userFollowedId);
 
             if (user == null || follower == null)
                 return false;
 
-            UsersFollowers userFollower = new UsersFollowers { UserId = userId, FollowerId = followerId };
+            Guid Id = new Guid();
+
+            UsersFollowers userFollower = new UsersFollowers { Id = Id, UserFollowedId = userFollowedId, UserFollowerId = userId };
             await UserRepository.AddFollower(userFollower);
             return true;
         }
 
-        public async Task<bool> RemoveFollower(Guid userId, Guid followerId)
+        public async Task<bool> RemoveFollower(Guid userId, Guid userFollowedId)
         {
-            User user = await UserRepository.GetById(userId);
-            User follower = await UserRepository.GetById(followerId);
-            if (user == null || follower == null)
-                return false;
+            var user = await UserRepository.GetById(userId);
+            var userFollowed = await UserRepository.GetById(userFollowedId);
 
-            UsersFollowers userFollower = new UsersFollowers { UserId = userId, FollowerId = followerId };
-            await UserRepository.RemoveFollower(userFollower);
+
+            if(user == null || userFollowed == null)
+            {
+                return false;
+            }
+
+            var usersFollowers = user.Following.FirstOrDefault(uf => uf.UserFollowerId == userId && uf.UserFollowedId == userFollowedId);
+
+            if (usersFollowers == null)
+            {
+                return false;
+            }
+
+            await UserRepository.RemoveFollower(usersFollowers);
             return true;
         }
     }

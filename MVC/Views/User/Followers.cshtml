@@ -1,0 +1,48 @@
+﻿@model IEnumerable<Entities.UsersFollowers>
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<div class="text-center justify-content-center d-flex flex-column" style="margin-bottom: 20px; height: 100%">
+    <h1 class="display-2">Seguidores</h1>
+</div>
+
+@if(Model != null && Model.Count() > 0)
+{
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nome
+            </th>
+            <th>
+                Sobrenome
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserFollower.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserFollower.Lastname)
+                </td>
+                <td>
+                    @Html.ActionLink("Ver perfil", "Profile", new { id= item.UserFollower.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+}
+else
+{
+    <div class="text-center justify-content-center d-flex flex-column" style="margin-bottom: 20px; height: 100%">
+        <h3>-----Não há novos hortagramers te seguindo-----</h3>
+    </div>
+}

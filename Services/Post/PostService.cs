@@ -19,27 +19,6 @@ namespace Services
             CommentService = commentService;
         }
 
-        public async Task<List<PostResponse>> BuildFeed(Guid userId)
-        {
-            List<Post> posts = await PostRepository.BuildFeed(userId);
-            List<PostResponse> postsResponse = new List<PostResponse>();
-
-            foreach (Post post in posts)
-            {
-                PostResponse postResponse = new PostResponse
-                {
-                    Description = post.Description,
-                    Id = post.Id,
-                    UserId = post.UserId,
-                    PhotoUrl = post.PhotoUrl,
-                    Comments = await CommentService.GetAllCommentsOfAPost(post.Id)
-                };
-                postsResponse.Add(postResponse);
-            }
-
-            return postsResponse;
-        }
-
         public async Task<Post> CreatePost(Guid id, Guid userId, string photoUrl, string description)
         {
             Post post = new Post(id, userId, photoUrl, description);
@@ -53,14 +32,14 @@ namespace Services
             return await PostRepository.GetById(id);
         }
 
-        public async Task<List<PostResponse>> GetAllPostsOfAUser(Guid userId)
+        public async Task<List<Post>> GetAllPostsOfAUser(Guid userId)
         {
             List<Post> posts = await PostRepository.GetAllPostsOfAUser(userId);
-            List<PostResponse> postsResponse = new List<PostResponse>();
+            List<Post> postsResponse = new List<Post>();
 
             foreach (Post post in posts)
             {
-                PostResponse postResponse = new PostResponse
+                Post postResponse = new Post
                 {
                     Description = post.Description,
                     Id = post.Id,
@@ -72,6 +51,12 @@ namespace Services
             }
 
             return postsResponse;
+        }
+
+        public async Task<List<Post>> GetFeed(User user)
+        {
+            List<Post> feed = await PostRepository.GetFeed(user);
+            return feed;
         }
 
         public async Task<bool> UpdatePost(Post post)

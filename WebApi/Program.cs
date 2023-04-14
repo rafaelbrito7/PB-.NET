@@ -19,17 +19,6 @@ namespace WebApi
             var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                                  policy =>
-                                  {
-                                      policy.WithOrigins("http://localhost:3000");
-                                      policy.AllowAnyMethod();
-                                      policy.AllowAnyHeader();
-                                  });
-            });
-
             // Add services to the container.
 
             builder.Services.AddControllers()
@@ -93,11 +82,8 @@ namespace WebApi
 
             app.UseHttpsRedirection();
 
-            app.UseCors(MyAllowSpecificOrigins);
-
             app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

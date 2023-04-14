@@ -15,20 +15,23 @@ namespace Entities
         [JsonPropertyName("id")]
         public Guid Id { get; set; }
 
-        [ForeignKey("user_id")]
         [JsonPropertyName("userId")]
         public Guid UserId { get; set; }
 
         [JsonPropertyName("user")]
-        public virtual User User { get; set; }
+        public virtual User? User { get; set; }
 
-        [JsonPropertyName("photoUrl")]
-        public string PhotoUrl { get; set; }
+        [JsonPropertyName("photoURL")]
+        public string? PhotoUrl { get; set; }
 
         [JsonPropertyName("description")]
         public string Description { get; set; }
 
-        public virtual List<Comment> Comments { get; set; }
+        [JsonPropertyName("comments")]
+        public virtual List<Comment>? Comments { get; set; }
+
+        [JsonPropertyName("created_at")]
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public Post()
         {

@@ -1,0 +1,39 @@
+﻿@model Entities.User
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Começar a seguir pessoa</h1>
+
+<h3>Deseja seguir esse usuário e verificar os posts dele?</h3>
+<div>
+    <h4>Country</h4>
+    <hr />
+    <img class="avatar" src="@Model.PhotoUrl" alt="User Image" height="200" />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Lastname)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Lastname)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>

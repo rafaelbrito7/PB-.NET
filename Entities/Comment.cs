@@ -1,21 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Entities
 {
     public class Comment
     {
         [Key]
+        [JsonPropertyName("id")]
         public Guid Id { get; set; }
 
-        [ForeignKey("user_id")]
+        [JsonPropertyName("userId")]
         public Guid UserId { get; set; }
-        public virtual User User { get; set; }
 
-        [ForeignKey("post_id")]
+        [JsonPropertyName("user")]
+        public virtual User? User { get; set; }
+
+        [JsonPropertyName("postId")]
         public Guid PostId { get; set; }
-        public virtual Post Post { get; set; }
 
+        [JsonPropertyName("post")]
+        public virtual Post? Post { get; set; }
+
+        [JsonPropertyName("content")]
         public string Content { get; set; }
 
         public Comment()

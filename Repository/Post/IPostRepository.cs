@@ -11,8 +11,6 @@ namespace Repository
     {
         PBContext Context { get; set; }
 
-        Task<List<Post>> BuildFeed(Guid userId);
-
         Task CreatePost(Post post);
 
         Task UpdatePost(Post post);
@@ -22,5 +20,7 @@ namespace Repository
         Task<Post> GetById(Guid id);
 
         Task<List<Post>> GetAllPostsOfAUser(Guid userId);
+
+        Task<List<Post>> GetFeed(User user);
     }
 }

@@ -9,7 +9,6 @@ namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class PostController : ControllerBase
     {
         public IPostService PostService { get; set; }
@@ -21,13 +20,6 @@ namespace WebApi.Controllers
             PostService = postService;
             ImageService = imageService;
             UserService = userService;
-        }
-
-        [HttpGet]
-        [Route("feed")]
-        public async Task<IActionResult> BuildFeed([FromQuery] Guid userId)
-        {
-            return Ok(await PostService.BuildFeed(userId));
         }
 
         // GET: api/Post?userId
@@ -54,13 +46,24 @@ namespace WebApi.Controllers
             return Ok(post);
         }
 
+        [HttpGet("{userId}/feed")]
+        public async Task<IActionResult> GetFeed([FromRoute] Guid userId)
+        {
+            var user = await UserService.GetById(userId);
+
+            if (user == null)
+                return BadRequest();
+
+            return Ok(await PostService.GetFeed(user));
+        }
+
         // POST api/Post
         [HttpPost]
-        public async Task<IActionResult> Post([FromForm] PostRequest postReq)
+        public async Task<IActionResult> Post([FromBody] Post postReq)
         {
             Guid Id = Guid.NewGuid();
 
-            ImageProperties imageProperties = Utils.ConvertImageBase64StringToByteArr(postReq.ImageBase64);
+            ImageProperties imageProperties = Utils.ConvertImageBase64StringToByteArr(postReq.PhotoUrl);
 
             string photoUrl = await ImageService.UploadFile("post_picture", Id, imageProperties.FileExtension, imageProperties.ImageBytes);
 

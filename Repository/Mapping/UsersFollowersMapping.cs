@@ -14,17 +14,23 @@ namespace Repository.Mapping
     {
         public void Configure(EntityTypeBuilder<UsersFollowers> builder)
         {
-            builder.HasKey(entity => new { entity.UserId, entity.FollowerId });
-            builder
-                .HasOne<User>(entity => entity.UserOrFollower)
-                .WithMany(entity => entity.Followers)
-                .HasForeignKey(entity => entity.UserId)
+            builder.HasKey(x => x.Id);
+
+            builder.HasOne<User>(uf => uf.UserFollowed)
+                .WithMany(u => u.Followers)
+                .HasForeignKey(uf => uf.UserFollowedId)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder
-                .HasOne<User>(entity => entity.UserOrFollower)
-                .WithMany(entity => entity.Followers)
-                .HasForeignKey(entity => entity.FollowerId)
+
+            builder.HasOne<User>(uf => uf.UserFollower)
+                .WithMany(u => u.Following)
+                .HasForeignKey(uf => uf.UserFollowerId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasIndex(uf => new { uf.UserFollowedId, uf.UserFollowerId })
+                .IsUnique();
+
+            builder.HasIndex(uf => uf.UserFollowerId);
+            builder.HasIndex(uf => uf.UserFollowedId);
         }
     }
 }

@@ -1,0 +1,13 @@
+﻿@model Entities.User
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Deletar perfil</h1>
+
+    <form asp-action="Delete">
+        <input type="submit" value="Tem certeza que deseja deletar seu perfil?" class="btn btn-danger" /> |
+        <a asp-action="Profile">Voltar para meu perfil</a>
+    </form>
+</div>

@@ -1,0 +1,50 @@
+﻿@model Entities.Post
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div>
+    <hr />
+<img class="avatar" src="@Model.PhotoUrl" alt="User Image" height="400" />
+    <dl class="row position-relative">
+        </dd>
+        <dt class = "col-sm-2">
+            Descrição
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)   
+            @if(this.User.Identity?.Name == Model.User.Email)
+            {
+                <form asp-action="Delete" class="float-end position-absolute top-0 end-0">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="submit" value="Deletar postagem" class="btn btn-danger" />
+                </form>
+            }
+        </dd>
+    </dl>
+    <h1 style="margin-bottom: 24px">Comentários</h1>
+    <form asp-controller="Comment" asp-action="Create" method="get" style="margin-bottom: 24px">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button type="submit" class="btn btn-primary">Comentar</button>
+    </form>
+    @if(Model.Comments != null && Model.Comments.Count() > 0)
+    {
+        <div class="container">
+            @foreach (var item in Model.Comments)
+            {
+                <div class="row" style="border: 1px solid #f6f6f6; margin-bottom: 24px;">
+                    <div>
+                        <h5 style="font-weight: 600;">@item.User.FirstName @item.User.Lastname</h5>
+                    </div>
+                    <div>
+                        <span>@item.Content</span>
+                    </div>
+                </div>
+            }
+         </div>
+    } else
+    {
+        <h3>-----Não há comentários-----</h3>
+    }
+</div>

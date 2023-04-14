@@ -1,0 +1,48 @@
+﻿@model IEnumerable<Entities.UsersFollowers>
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<div class="text-center justify-content-center d-flex flex-column" style="margin-bottom: 20px; height: 100%">
+    <h1 class="display-2">Seguindo</h1>
+</div>
+
+@if(Model != null && Model.Count() > 0)
+{
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nome
+            </th>
+            <th>
+                Sobrenome
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserFollowed.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserFollowed.Lastname)
+                </td>
+                <td>
+                    @Html.ActionLink("Ver perfil", "Profile", new { id=item.UserFollowedId })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+}
+else
+{
+<div class="text-center justify-content-center d-flex flex-column" style="margin-bottom: 20px; height: 100%">
+    <h3>-----Você não segue nenhum hortogramer-----</h3>
+</div>
+}

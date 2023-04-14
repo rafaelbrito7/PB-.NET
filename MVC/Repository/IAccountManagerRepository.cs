@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using static MVC.Repository.AccountManagerRepository;
 
-namespace MVC.Repository
+namespace MVC
 {
     public interface IAccountManagerRepository
     {

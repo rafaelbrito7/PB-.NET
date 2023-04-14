@@ -1,0 +1,14 @@
+﻿@model Entities.Post
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Deletar postagem</h1>
+
+<h3>Tem certeza que deseja deletar essa postagem</h3>
+    <form asp-action="Delete">
+        <input type="submit" value="Tem certeza que deseja deletar?" class="btn btn-danger" /> |
+        <a asp-action="Index">Voltar para lista de postagens</a>
+    </form>
+</div>

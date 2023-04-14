@@ -43,12 +43,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CommentRequest commentReq)
+        public async Task<IActionResult> Post([FromBody] Comment commentReq)
         {
             Guid id = new Guid();
-
-            if (commentReq.UserId == null || commentReq.PostId == null)
-                return BadRequest();
 
             Comment commentRes = await CommentService.CreateComment(id, commentReq.UserId, commentReq.PostId, commentReq.Content);
 

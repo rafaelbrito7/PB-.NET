@@ -1,0 +1,56 @@
+﻿@model IEnumerable<Entities.Post>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center justify-content-center d-flex flex-column" style="margin-bottom: 20px; height: 100%">
+    <h1 class="display-2">Feed de posts</h1>
+</div>
+
+
+@if (Model != null && Model.Count() > 0)
+{
+    <p>
+        <a asp-action="Create" asp-controller="Post">Fazer nova postagem</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Quem postou?
+                </th>
+                <th>
+                    Descrição
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.User.FirstName) @Html.DisplayFor(modelItem => item.User.Lastname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Detalhes da postagem", "Details", "Post", new {  id=item.Id  })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="text-center justify-content-center d-flex flex-column" style="margin-bottom: 20px; height: 100%">
+        <h3>-----Não há posts-----</h3>
+    </div>
+}
+
+
+

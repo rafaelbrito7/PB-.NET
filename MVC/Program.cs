@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using MVC.Models.Account;
@@ -27,14 +28,11 @@ namespace MVC
                 config.AccessDeniedPath = "/Account/AccessDenied";
                 config.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 config.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
-                config.Cookie.Domain = "localhost";
-                config.Cookie.HttpOnly = true;
-                config.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                config.Cookie.Path = "/";
-                config.Cookie.Name = "hortagramCookie";
             });
 
+
             builder.Services.AddSession();
+            builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
 
@@ -53,6 +51,8 @@ namespace MVC
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            
 
             app.UseSession();
 

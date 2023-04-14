@@ -1,0 +1,49 @@
+﻿@model IEnumerable<Entities.User>
+
+@{
+    ViewData["Title"] = "View";
+}
+
+
+<div class="text-center justify-content-center d-flex flex-column" style="margin-bottom: 20px">
+    <h1 class="display-2">Encontre mais hortogramers</h1>
+</div>
+
+@if (Model != null && Model.Count() > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Lastname)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Lastname)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Ver perfil", "Profile", new { id=item.Id, following=false })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="text-center justify-content-center d-flex flex-column" style="margin-bottom: 20px; height: 100%">
+        <h3>-----Não há novos hortagramers para seguir-----</h3>
+    </div>
+}

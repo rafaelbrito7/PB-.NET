@@ -32,7 +32,6 @@ namespace MVC.Repository
                 Email = email,
                 Password = password,
                 Token = token
-
             };
 
             await SignInManager.SignInAsync(user, true);

@@ -17,17 +17,6 @@ namespace Repository
             Context = context;
         }
 
-        public async Task<List<Post>> BuildFeed(Guid userId)
-        {
-            List<UsersFollowers> followers = await Context.UsersFollowers.Where(uf => uf.UserId == userId).ToListAsync();
-            List<Guid> followersGuids = new List<Guid>();
-            foreach (UsersFollowers uf in followers)
-            {
-                followersGuids.Add(uf.FollowerId);
-            }
-            return await Context.Posts.Where(post => post.UserId != userId && followersGuids.Any(followerGuid => followerGuid == post.UserId)).ToListAsync();
-        }
-
         public async Task CreatePost(Post post)
         {
             try
@@ -72,12 +61,30 @@ namespace Repository
 
         public async Task<Post> GetById(Guid id)
         {
-            return await Context.Posts.FirstOrDefaultAsync(post => post.Id == id);
+            var post = await Context.Posts
+                .Include(post => post.User)
+                .Include(post => post.Comments)
+                .ThenInclude(comment => comment.User)
+                .FirstOrDefaultAsync(post => post.Id == id);
+
+
+            return post;
         }
 
         public async Task<List<Post>> GetAllPostsOfAUser(Guid userId)
         {
             return await Context.Posts.Where(post => post.UserId == userId).ToListAsync();
+        }
+
+        public async Task<List<Post>> GetFeed(User user)
+        {
+            var followedUserIds = user.Following.Select(f => f.UserFollowedId);
+            var feed = await Context.Posts
+                .Where(post => followedUserIds.Contains(post.UserId))
+                .OrderByDescending(post => post.CreatedAt)
+                .ToListAsync();
+
+            return feed;
         }
     }
 }

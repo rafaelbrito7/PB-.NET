@@ -22,39 +22,42 @@ namespace WebApi.Controllers
         }
 
         // GET: api/User
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            return Ok(await UserService.GetAll());
-        }
+        [HttpGet("{id}")]
 
-        [HttpGet]
-        [Route("search")]
-        public async Task<IActionResult> GetUsersByNameOrLastname([FromQuery] string name, [FromQuery] string lastname)
+        public async Task<IActionResult> GetNotFollowing(Guid id)
         {
-            return Ok(await UserService.GetUsersByNameOrLastname(name, lastname));
+            return Ok(await UserService.GetNotFollowing(id));
         }
 
         // GET: api/User/5
-        [HttpGet("{id}", Name = "GetUser")]
+        [HttpGet("profile/{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            return Ok(await UserService.GetById(id));
+            User user = await UserService.GetById(id);
+            return Ok(user);
         }
 
         // POST: api/User
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Post([FromForm] UserRequest userReq)
+        public async Task<IActionResult> Post([FromBody] User userReq)
         {
             Guid Id = Guid.NewGuid();
 
-            ImageProperties imageProperties = Utils.ConvertImageBase64StringToByteArr(userReq.ImageBase64);
+            ImageProperties imageProperties = Utils.ConvertImageBase64StringToByteArr(userReq.PhotoUrl);
 
             string photoUrl = await ImageService.UploadFile("profile", Id, imageProperties.FileExtension, imageProperties.ImageBytes);
 
-            userReq.Status = true;
-            UserResponse userRes = await UserService.CreateUser(Id, userReq.FirstName, userReq.Lastname, userReq.Email, userReq.Password, photoUrl, userReq.Status);
+            var user = new User
+            {
+                Id = Id,
+                FirstName = userReq.FirstName,
+                Lastname = userReq.Lastname,
+                Email = userReq.Email,
+                Password = userReq.Password,
+                PhotoUrl = photoUrl,
+            };
+            User userRes = await UserService.CreateUser(Id, user);
 
             if (userRes == null)
                 return BadRequest();
@@ -66,7 +69,11 @@ namespace WebApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] User userReq)
         {
-            bool result = await UserService.UpdateUser(id, userReq.FirstName, userReq.Lastname, userReq.Email, userReq.Password, userReq.PhotoURL);
+            ImageProperties imageProperties = Utils.ConvertImageBase64StringToByteArr(userReq.PhotoUrl);
+
+            string photoUrl = await ImageService.UploadFile("profile", id, imageProperties.FileExtension, imageProperties.ImageBytes);
+
+            bool result = await UserService.UpdateUser(id, userReq.FirstName, userReq.Lastname, userReq.Email, userReq.Password, photoUrl);
 
             if (!result)
                 return BadRequest();
@@ -78,7 +85,7 @@ namespace WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            User user = await UserService.GetUserById(id);
+            User user = await UserService.GetById(id);
 
             if (user == null)
                 return BadRequest();
@@ -91,18 +98,11 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        [Route("{id}/followers")]
-        public async Task<IActionResult> GetFollowers([FromRoute] Guid id)
-        {
-            return Ok(await UserService.GetFollowers(id));
-        }
-
         [HttpPost]
-        [Route("{id}/followers")]
-        public async Task<IActionResult> AddFollower([FromRoute] Guid id, [FromBody] FollowerRequest follower)
+        [Route("{userId}/{userFollowed}/followers")]
+        public async Task<IActionResult> AddFollower([FromRoute] Guid userId, Guid userFollowed)
         {
-            bool result = await UserService.AddFollower(id, follower.Id);
+            bool result = await UserService.AddFollower(userId, userFollowed);
 
             if (!result)
                 return BadRequest();
@@ -111,10 +111,10 @@ namespace WebApi.Controllers
         }
 
         [HttpPut]
-        [Route("{id}/followers")]
-        public async Task<IActionResult> RemoveFollower([FromRoute] Guid id, [FromBody] FollowerRequest follower)
+        [Route("{userId}/{userFollowed}/followers")]
+        public async Task<IActionResult> RemoveFollower([FromRoute] Guid userId, Guid userFollowed)
         {
-            bool result = await UserService.RemoveFollower(id, follower.Id);
+            bool result = await UserService.RemoveFollower(userId, userFollowed);
 
             if (!result)
                 return BadRequest();
